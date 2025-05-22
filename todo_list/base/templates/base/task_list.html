@@ -1,0 +1,49 @@
+{% extends 'base/main.html' %}
+{% block content %}
+
+<div class="header-bar">
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+        <h3 style="margin:0">You have <i>{{count}}</i> incomplete task{{count|pluralize}}</h3>
+    </div>
+    {% if request.user.is_authenticated %}
+    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+        {% csrf_token %}
+    </form>
+    <a href="#" class="logout-link" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+    {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</div>
+<div class="task-add-wrapper">
+    <form method="get">
+        <!-- {% csrf_token %} -->
+        <input type="text" name="search-area" value="{{search_input}}">
+        <input type="submit" value="Search">
+    </form>
+    <a class="add-link" href="{% url 'task-create' %}">&#43;</a>
+</div>
+<div class="task-list">
+    
+    {{color}}
+    {% for task in tasks %}
+        <div class="task-container">
+            {% if task.complete %}
+            <div class="task-title">
+                <div class="icon-complete"></div>
+                <a href="{% url 'task-update' task.id %}"><i><s>{{task.title}}</s></i></a>
+            </div>
+            <a class="delete-icon" href="{% url 'task-delete' task.id %}">&#10060;</a>
+            {% else %}
+            <div class="task-title">
+                <div class="icon-incomplete"></div>
+                <a href="{% url 'task-update' task.id %}">{{task.title}}</a>
+            </div>
+            <a class="delete-icon" href="{% url 'task-delete' task.id %}">&#10060;</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock content%}
+
